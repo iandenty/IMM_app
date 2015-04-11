@@ -1,0 +1,32 @@
+vpastatus:
+  prenegotiations:
+    Bolivia: bolivia
+    Colombia: colombia
+    Ecuador: ecuador
+    Guatemala: guatemala
+    Papua New Guinea: papua-new-guinea
+    Peru: peru
+    Philippines: philippines
+    Sierra Leone: sierra-leone
+    Solomon Islands: solomon-islands   
+  negotiation:
+    Côte d'Ivoire: cote-d-ivoire
+    Democratic Republic of the Congo: democratic-republic-of-the-congo
+    Gabon: gabon
+    Guyana: guyana
+    Honduras: honduras
+    Lao People's Democratic Republic: lao
+    Malaysia: malaysia
+    Thailand: thailand
+    Viet Nam: viet-nam
+  preparation:
+    Cambodia: cambodia
+    Myanmar: myanmar
+  implementation:
+    Cameroon: cameroon
+    Central African Republic: central-african-republic
+    Congo: congo
+    Ghana: ghana
+    Indonesia: indonesia
+    Liberia: liberia
+

@@ -1,0 +1,31 @@
+.content{
+  h2 {
+    font-size: 26px;
+    color: black;
+    font-family: 'Armata', sans-serif;
+  }
+  .country-list{
+    width: 24.5%;
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 20px;
+  } h3 {
+    font-size: 22px;
+    color: black;
+    font-family: 'Armata', sans-serif;
+  } ul li {
+    list-style: none;
+  } a {
+    text-decoration: none;
+    color: rgba(83, 83, 83, 1.0);
+    font-family: 'Armata', sans-serif;
+  } .prenegotiation:hover{
+    background-color: rgba(166, 206, 227, 0.6);
+  } .negotiation:hover {
+    background-color: rgba(31, 120, 180, 0.6);
+  } .preparation:hover {
+    background-color: rgba(178, 223, 138, 0.6)
+  } .implementation:hover {
+    background-color: rgba(51, 160, 44, 0.6);
+  }
+}

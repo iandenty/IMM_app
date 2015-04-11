@@ -1,0 +1,35 @@
+<div class="content">
+  <h2>VPA status</h2>
+  <div class="country-list">
+    <h3>Pre-negotiations</h3>
+    <ul>
+      <% data.country.vpastatus.prenegotiations.each do |k, v| %>
+      <li class="prenegotiation"><a href="/countries/prenegotiations/<%= v %>/"><%= k %></a></li>
+      <% end %>
+    </ul>
+  </div>
+  <div class="country-list">
+    <h3>Negotiation</h3>
+    <ul>
+      <% data.country.vpastatus.negotiation.each do |k, v| %>
+      <li class="negotiation"><a href="/countries/negotiation/<%= v %>/"><%= k %></a></li>
+      <% end %>
+    </ul>
+  </div>
+  <div class="country-list">
+    <h3>Preparation</h3>
+    <ul>
+      <% data.country.vpastatus.preparation.each do |k, v| %>
+      <li class="preparation"><a href="/countries/preparation/<%= v %>/"><%= k %></a></li>
+      <% end %>
+    </ul>
+  </div>
+  <div class="country-list">
+    <h3>Implementation</h3>
+    <ul>
+      <% data.country.vpastatus.implementation.each do |k, v| %>
+      <li class="implementation"><a href="/countries/implementation/<%= v %>/"><%= k %></a></li>
+      <% end %>
+    </ul>
+  </div>
+</div>
