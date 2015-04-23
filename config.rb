@@ -39,15 +39,15 @@ data.country.vpastatus.prenegotiations.each do |k, v|
 end
 
 data.country.vpastatus.negotiation.each do |k, v|
-  proxy "/countries/negotiation/#{v}.html", "/negotiation/template.html", :locals => { :country_name => k }, :ignore => true
+  proxy "/countries/negotiation/#{v}.html", "/negotiation/template.html", :locals => { :country_name => k, :country_id => v }, :ignore => true
 end
 
 data.country.vpastatus.preparation.each do |k, v|
-  proxy "/countries/preparation/#{v}.html", "/preparation/template.html", :locals => { :country_name => k }, :ignore => true
+  proxy "/countries/preparation/#{v}.html", "/preparation/template.html", :locals => { :country_name => k, :country_id => v }, :ignore => true
 end
 
 data.country.vpastatus.implementation.each do |k, v|
-  proxy "/countries/implementation/#{v}.html", "/implementation/template.html", :locals => { :country_name => k }, :ignore => true
+  proxy "/countries/implementation/#{v}.html", "/implementation/template.html", :locals => { :country_name => k, :country_id => v }, :ignore => true
 end
 
 ###
