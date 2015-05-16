@@ -1,9 +1,9 @@
 $(function () { 
   if($('#chart').length > 0){
-
+    var year = 'year';
     var chartDetails = {
       data: {
-        x: 'year',
+        x: year,
         xFormat: '%Y',
         columns: [
         ],
@@ -29,17 +29,24 @@ $(function () {
     //Get labels
     function getLabels(){
       labels = [];
-      labels.push('year');
+      // labels.push(year);
       sql.execute("SELECT DISTINCT year FROM all_quantity_figures")
         .done(function(data) {
         for (var i = 0; i < data.rows.length; i++) {
           labels.push((data.rows[i].year).toString());
         }
         labels.sort();
-        labelId = labels.pop();
-        labels.unshift(labelId);
-        console.log(labels);
+        chartDetails.axis.x.tick['values'] = labels;
+        labels.unshift(year);
+        tickLabels = labels.slice(1, -1);
+        chartDetails.axis.x.tick['values'] = tickLabels;
+        console.log("tick labels are ", tickLabels)
         chartDetails.data.columns.unshift(labels);
+        // labelId = labels.pop();
+        // labels.unshift(labelId);
+
+        console.log(labels);
+        // chartDetails.data.columns.unshift(labels);
       }); 
     }
 
