@@ -34,27 +34,19 @@ $(function () {
         colors: {
           default1: '#e2e2e3'
         }
-      }
-      ,
-      // legend: {
-      //   show: false
-      // },
+      },
       donut: {
-          title: "",
-          // label: {
-          //   show: false
-          // }
+        title: "hello",
       }
-    //   ,
-    //   tooltip: {
-    //       show: false
-    //   }
     }
 
     var donutDetails = {
       columns: [
       ],
       type: 'donut',
+      donut: {
+          title: ""
+      }
     }
 
     //Key for Cartodb account
@@ -126,6 +118,19 @@ $(function () {
 
       $('.overlay').on({
         "mouseover": function() { 
+
+          setTimeout(function () {
+            chart2.unload();
+          }, 500);
+
+          indexArray = $(this).attr("data-id");
+          intArrayIndex = (parseInt(indexArray) + 1);
+          populatePie(intArrayIndex);
+
+          setTimeout(function () {
+            chart2.load(donutDetails);
+          }, 800);
+
         },
         "mouseout":  function() { 
         }, 
@@ -136,11 +141,15 @@ $(function () {
           }, 500);
 
           indexArray = $(this).attr("data-id");
-          populatePie(indexArray);
+          intArrayIndex = (parseInt(indexArray) + 1);
+          populatePie(intArrayIndex);
 
           setTimeout(function () {
             chart2.load(donutDetails);
           }, 800);
+
+          $('.overlay').off("mouseover");
+
         }, 
       });
 
@@ -156,25 +165,23 @@ $(function () {
       $(rectangle).append('rect').attr({"class": "overlay", "data-id": arrayNo, "width": width , "height": height, "rx": "2", "ry": "2"});
     }
 
-    function populatePie(indexArray){
+    function populatePie(intArrayIndex){
       donutDetails.columns.length = 0;
       for (var i = 0; i < chartDetails.data.columns.length; i++) {
         var dataColumn = [];
         dataLabel = chartDetails.data.columns[i][0];
-        dataValue = chartDetails.data.columns[i][indexArray];
+        dataValue = chartDetails.data.columns[i][intArrayIndex];
         if(dataLabel !== year) {
           dataColumn.push(dataLabel, dataValue);
         } else {
-          defaultDonut.donut['title'] = dataValue;
+          $('.c3-chart-arcs-title').text(dataValue);
         }
         if(dataColumn.length > 0){
           donutDetails.columns.push(dataColumn);
         }
-        console.log(donutDetails.columns)
       }
     }
 
-      
   }
 });
 
