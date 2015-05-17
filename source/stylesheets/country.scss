@@ -4,10 +4,17 @@
     color: black;
     font-family: 'Armata', sans-serif;
   }
-  canvas {
-    width: 50%;
+  #chart1 {
+    width: 65%;
     height: 400px;
+    display: inline-block;
   }
+  #chart2 {
+    width: 33%;
+    height: 400px;
+    display: inline-block;
+  }
+
   .country-list{
     width: 24.5%;
     display: inline-block;
@@ -32,4 +39,13 @@
   } .implementation:hover {
     background-color: rgba(51, 160, 44, 0.6);
   }
+}
+
+.overlay:hover {
+  cursor: pointer;
+  stroke: rgba(83, 83, 83, 1.0);
+  stroke-width: 1;
+  opacity: 0.5;
+  fill: "#F9F38C";
+  fill-rule: "nonzero";
 }
