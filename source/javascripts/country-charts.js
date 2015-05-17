@@ -20,6 +20,9 @@ $(function () {
           tick: {
             format: '%Y'
           }
+        },
+        y: {
+          label: '1000 m3 RWE'
         }
       }
     }
@@ -36,7 +39,7 @@ $(function () {
         }
       },
       donut: {
-        title: "hello",
+        title: "",
       }
     }
 
