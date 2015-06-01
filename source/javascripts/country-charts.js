@@ -1,6 +1,9 @@
 $(function () { 
-  if($('#chart1').length > 0){
-    
+  if($('#chart1, #chart2, .btn-group').length){
+    var chart1;
+    var chart2;
+    var dataTableQuantity = 'all_quantity_figures';
+    var dataTableValue = 'all_value_figures';
     var year = 'year';
     var chartDetails = {
       bindto: '#chart1',
@@ -58,11 +61,63 @@ $(function () {
     //Assign country name
     var countryID = document.getElementById("chart1").getAttribute("data-id");
 
+    //Set default state
+    var activeData = $('.btn-group').find($('.btn[data-id="quantity"]'));
+    activeData.attr('aria-pressed', 'true');
+    activeData.addClass('active');
+    // setData();
+
+    var buttons = $('.btn-group').find($('button'));
+    buttons.click(function(){
+      if($(this).hasClass('active')){
+        console.log("already active...");
+      } else {
+        $(this).toggleClass('active');
+        $(this).attr('aria-pressed', 'true')
+        var sibling = $(this).siblings('.btn-default');
+        sibling.removeClass('active');
+        sibling.attr('aria-pressed', 'false');
+        activeData = $(this);
+        setData();
+      }
+    })
+
+      getLabels(dataTableQuantity);
+      getDataFields(dataTableQuantity);
+
+    function setData(){
+      if(activeData.attr("data-id") === "quantity") {
+        if(typeof chart1 !== "undefined"){
+          chart1.unload();
+          chart2.unload();
+          dataSet = dataTableQuantity;
+          console.log(dataSet)
+          getLabels(dataSet);
+          getDataFields(dataSet);
+        }
+        var dataSet = "quantity";
+        getLabels();
+        getDataFields();
+      } else if(activeData.attr("data-id") === "value") {
+        if(typeof chart1 !== "undefined"){
+          chart1.unload();
+          chart2.unload();
+          dataSet = dataTableValue;
+          console.log(dataSet)
+          getLabels(dataSet);
+          getDataFields(dataSet);
+        }
+        var dataSet = "value";
+        getLabels(dataSet);
+        getDataFields(dataSet);
+      }
+    }
+
     //Get labels
-    function getLabels(){
+    function getLabels(dataSet){
       labels = [];
       // labels.push(year);
-      sql.execute("SELECT DISTINCT year FROM all_quantity_figures")
+      sql.execute("SELECT DISTINCT year FROM "+dataSet+"")
         .done(function(data) {
         for (var i = 0; i < data.rows.length; i++) {
           labels.push((data.rows[i].year).toString());
@@ -77,10 +132,11 @@ $(function () {
     }
 
     // Get distinct dataFields
-    function getDataFields(){
+    function getDataFields(dataSet){
       var chartType = "area-spline";
       dataFields = [];
-      sql.execute("SELECT DISTINCT product_group FROM all_quantity_figures")
+      console.log("SELECT DISTINCT product_group FROM "+dataSet+"")
+      sql.execute("SELECT DISTINCT product_group FROM "+dataSet+"")
         .done(function(data) {
         for (var i = 0; i < data.rows.length; i++) {
           dataFields.push(data.rows[i].product_group);
@@ -90,7 +146,7 @@ $(function () {
           chartDetails.data.colors[dataFields[i]] = hexColors[i];
           defaultDonut.data.colors[dataFields[i]] = hexColors[i];
           chartDetails.data.types[dataFields[i]] = chartType;
-          getData(dataFields[i]);
+          getData(dataFields[i], dataSet);
         }
       });
     }
@@ -103,7 +159,7 @@ $(function () {
    //                     "WHERE country_name = {{countryName}} AND product_group = {{productGroup}}";
    //  , {countryName: countryID, productGroup: dataField} "+countryID+"
 
-    function getData(dataField){
+    function getData(dataField, dataSet){
       // if(inputString.indexOf("'") > -1){
 
       // }
@@ -112,8 +168,9 @@ $(function () {
       allDataForField = [];
       var allDataForField = [dataField];
       var sqlStatement = "SELECT amount " +
-                       "FROM all_quantity_figures " +
-                       "WHERE country_name='"+countryID.replace(/'/g, "''")+"'  AND product_group='"+dataField+"'";
+                       "FROM "+dataSet+"" +
+                       " WHERE country_name='"+countryID.replace(/'/g, "''")+"'  AND product_group='"+dataField+"'";
+                       console.log(sqlStatement)
       sql.execute(sqlStatement)
       .done(function(data) {
         for (var i = 0; i < data.rows.length; i++) {
@@ -123,12 +180,9 @@ $(function () {
       })
     }
 
-    getLabels();
-    getDataFields();
-
     setTimeout(function () {
-      var chart1 = c3.generate(chartDetails);
-      var chart2 = c3.generate(defaultDonut);
+      chart1 = c3.generate(chartDetails);
+      chart2 = c3.generate(defaultDonut);
       chart2.legend.hide('default1');
 
       var rectangles = [].slice.call($('#chart1 svg').find('.c3-event-rect'));
