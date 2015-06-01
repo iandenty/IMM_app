@@ -1,4 +1,10 @@
 <div class="content">
+  <div class="button-container">
+    <div class="btn-group">
+      <button type="button" class="btn btn-default" data-id="quantity">Quantity</button>
+      <button type="button" class="btn btn-default" data-id="value">Value</button>
+    </div>
+  </div>
   <h3><%= locals[:country_name]%></h3>
   <div id="chart1" class="chart" data-id="<%= locals[:country_name]%>"></div>
   <div id="chart2" data-id="<%= locals[:country_name]%>"></div>

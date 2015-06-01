@@ -2,7 +2,7 @@
   h2 {
     font-size: 26px;
     color: black;
-    font-family: 'Armata', sans-serif;
+    font-family: 'Raleway', sans-serif;
   }
   #chart1 {
     width: 65%;
@@ -23,13 +23,13 @@
   } h3 {
     font-size: 22px;
     color: black;
-    font-family: 'Armata', sans-serif;
+    font-family: 'Raleway', sans-serif;
   } ul li {
     list-style: none;
   } a {
     text-decoration: none;
     color: rgba(83, 83, 83, 1.0);
-    font-family: 'Armata', sans-serif;
+    font-family: 'Raleway', sans-serif;
   } .prenegotiation:hover{
     background-color: rgba(166, 206, 227, 0.6);
   } .negotiation:hover {
@@ -48,4 +48,14 @@
   opacity: 0.5;
   fill: "#F9F38C";
   fill-rule: "nonzero";
+}
+
+.button-container {
+  width: 100%;
+  text-align: center;
+  .button-group {
+    margin: 0 auto;
+  } button {
+    font-family: 'Raleway', sans-serif;
+  }
 }

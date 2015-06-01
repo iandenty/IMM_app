@@ -95,10 +95,27 @@ $(function () {
       });
     }
 
+
+    // '"+countryID+"'
+
+   // var sqlStatement =  "SELECT amount " +
+   //                     "FROM all_quantity_figures " +
+   //                     "WHERE country_name = {{countryName}} AND product_group = {{productGroup}}";
+   //  , {countryName: countryID, productGroup: dataField} "+countryID+"
+
     function getData(dataField){
+      // if(inputString.indexOf("'") > -1){
+
+      // }
+      // var cote = "Côte d''Ivoire"
+
       allDataForField = [];
       var allDataForField = [dataField];
-      sql.execute("SELECT amount FROM all_quantity_figures where country_name='"+countryID+"' AND product_group='"+dataField+"'").done(function(data) {
+      var sqlStatement = "SELECT amount " +
+                       "FROM all_quantity_figures " +
+                       "WHERE country_name='"+countryID.replace(/'/g, "''")+"'  AND product_group='"+dataField+"'";
+      sql.execute(sqlStatement)
+      .done(function(data) {
         for (var i = 0; i < data.rows.length; i++) {
           allDataForField.push(data.rows[i].amount);
         }
