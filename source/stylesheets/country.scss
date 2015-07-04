@@ -58,8 +58,12 @@
   } button {
     font-family: 'Raleway', sans-serif;
     border: 1px solid rgba(83, 83, 83, 1.0);
-  }
-} button.active {
-  border: 1px solid rgba(83, 83, 83, 1.0);
+    &.active {
+      border: 1px solid #535353;
 
-}
+    }
+  }
+  .active {
+    border: 1px solid #535353;
+  }
+} 

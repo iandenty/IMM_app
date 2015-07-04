@@ -2,9 +2,21 @@ $(function () {
   if($('#chart1, #chart2, .btn-group').length){
     var chart1;
     var chart2;
-    var dataTableQuantity = 'all_quantity_figures';
-    var dataTableValue = 'all_value_figures';
     var year = 'year';
+
+    var dataTypes = {
+      value: {
+        cartoSql: 'all_quantity_figures',
+        unit: '1000 USD',
+        chartData: {}
+      },
+      quantity: {
+        cartoSql: 'all_value_figures',
+        unit: '1000 RWE m3',
+        chartData: {}
+      }
+    }
+
     var chartDetails = {
       bindto: '#chart1',
       data: {
@@ -15,6 +27,28 @@ $(function () {
         types: {
         },
         colors: {
+        }
+      },
+      legend: {
+        item: {
+          onmouseover: function(id) { 
+            var $pieSegments = $('#chart2').find('.c3-chart-arc');
+            $pieSegments.each(function(){
+              console.log($(this))
+              var $this = $(this);
+              if ($this.hasClass('c3-target-'+id+'')){
+                $this.addClass('c3-focused');
+              } else {
+                $this.addClass('c3-defocused');
+              }
+            })
+          },
+          onmouseout: function(id) { 
+            var $pieSegments = $('#chart2').find('.c3-chart-arc');
+            $pieSegments.each(function(){
+              $(this).removeClass('c3-defocused');
+            })
+          }
         }
       },
       axis: {
@@ -39,11 +73,34 @@ $(function () {
         type : 'donut',
         colors: {
           default1: '#e2e2e3'
+        },
+        onmouseover: function(id) { 
+          var $chartLines = $('#chart1').find('.c3-chart-line');
+          $chartLines.each(function(){
+            var $this = $(this);
+            if ($this.hasClass('c3-target-'+id.name+'')){
+              console.log('yes');
+              $this.addClass('c3-focused');
+            } else {
+              $this.addClass('c3-defocused');
+              console.log('no');
+            }
+          })
+        },
+        onmouseout: function(id) { 
+          var $chartLines = $('#chart1').find('.c3-chart-line');
+          $chartLines.each(function(){
+            $(this).removeClass('c3-defocused');
+          })
         }
       },
       donut: {
         title: "",
-      }
+      },
+      legend: {
+              show: false
+
+          }
     }
 
     var donutDetails = {
@@ -69,48 +126,65 @@ $(function () {
 
     var buttons = $('.btn-group').find($('button'));
     buttons.click(function(){
-      if($(this).hasClass('active')){
+      activeData = $(this);
+      if(activeData.hasClass('active')){
         console.log("already active...");
       } else {
-        $(this).toggleClass('active');
-        $(this).attr('aria-pressed', 'true')
-        var sibling = $(this).siblings('.btn-default');
+        activeData.toggleClass('active');
+        activeData.attr('aria-pressed', 'true')
+        var sibling = activeData.siblings('.btn-default');
         sibling.removeClass('active');
         sibling.attr('aria-pressed', 'false');
-        activeData = $(this);
-        setData();
+        var dataType = activeData.attr("data-id");
+        setData(dataType);
       }
     })
 
-      getLabels(dataTableQuantity);
-      getDataFields(dataTableQuantity);
+    getLabels(dataTypes.quantity.cartoSql);
+    getDataFields(dataTypes.quantity.cartoSql);
 
-    function setData(){
-      if(activeData.attr("data-id") === "quantity") {
-        if(typeof chart1 !== "undefined"){
-          chart1.unload();
-          chart2.unload();
-          dataSet = dataTableQuantity;
-          console.log(dataSet)
-          getLabels(dataSet);
-          getDataFields(dataSet);
-        }
-        var dataSet = "quantity";
-        getLabels();
-        getDataFields();
-      } else if(activeData.attr("data-id") === "value") {
-        if(typeof chart1 !== "undefined"){
-          chart1.unload();
-          chart2.unload();
-          dataSet = dataTableValue;
-          console.log(dataSet)
-          getLabels(dataSet);
-          getDataFields(dataSet);
-        }
-        var dataSet = "value";
-        getLabels(dataSet);
-        getDataFields(dataSet);
-      }
+    function setData(dataType){
+
+      setTimeout(function() {
+        chart1.unload();
+        chart2.unload();
+        chart2.toggle();
+        $('#chart2 .c3-chart-arcs-title').toggle();
+      }, 200);
+
+      setTimeout(function() {
+        getLabels(dataTypes[dataType]);
+        getDataFields(dataTypes[dataType]);
+        $('#chart2 .c3-chart-arcs-title').toggle();
+        chart2.toggle();
+      }, 500);
+      console.log(dataTypes[dataType]);
+
+      // if(activeData.attr("data-id") === "quantity") {
+      //   if(typeof chart1 !== "undefined"){
+      //     chart1.unload();
+      //     chart2.unload();
+      //     dataSet = dataTableQuantity;
+      //     console.log(dataSet)
+      //     getLabels(dataSet);
+      //     getDataFields(dataSet);
+      //   }
+      //   var dataSet = "quantity";
+      //   getLabels();
+      //   getDataFields();
+      // } else if(activeData.attr("data-id") === "value") {
+      //   if(typeof chart1 !== "undefined"){
+      //     chart1.unload();
+      //     chart2.unload();
+      //     dataSet = dataTableValue;
+      //     console.log(dataSet)
+      //     getLabels(dataSet);
+      //     getDataFields(dataSet);
+      //   }
+      //   var dataSet = "value";
+      //   getLabels(dataSet);
+      //   getDataFields(dataSet);
+      // }
     }
 
     //Get labels
@@ -181,6 +255,9 @@ $(function () {
     }
 
     setTimeout(function () {
+      console.log(chartDetails);
+      console.log(defaultDonut);
+
       chart1 = c3.generate(chartDetails);
       chart2 = c3.generate(defaultDonut);
       chart2.legend.hide('default1');
