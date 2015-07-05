@@ -6,12 +6,12 @@ $(function () {
 
     var dataTypes = {
       value: {
-        cartoSql: 'all_quantity_figures',
+        cartoSql: 'all_value_figures',
         unit: '1000 USD',
         chartData: {}
       },
       quantity: {
-        cartoSql: 'all_value_figures',
+        cartoSql: 'all_quantity_figures',
         unit: '1000 RWE m3',
         chartData: {}
       }
@@ -76,21 +76,43 @@ $(function () {
         },
         onmouseover: function(id) { 
           var $chartLines = $('#chart1').find('.c3-chart-line');
+          var $legendItem = $('#chart1').find('.c3-legend-item');
+          var chartTitle = $('#chart2 .c3-chart-arcs-title').text();
           $chartLines.each(function(){
             var $this = $(this);
             if ($this.hasClass('c3-target-'+id.name+'')){
-              console.log('yes');
               $this.addClass('c3-focused');
             } else {
               $this.addClass('c3-defocused');
-              console.log('no');
             }
           })
+          $legendItem.each(function(){
+            var $this = $(this);
+            if (!$this.hasClass('c3-legend-item-'+id.name+'')){
+              $this.css('opacity', '0.3');
+            }
+          })
+          var ticks = $('#chart1 .c3-axis.c3-axis-x .tick tspan');
+          var ticksArray = [];
+          ticks.each(function(){
+            ticksArray.push($(this).text());
+          })
+          ticksArray.sort();
+          var tickIndex = $.inArray(chartTitle, ticksArray);
+          $($('.c3-shapes-'+id.name+'.c3-circles-'+id.name+' .c3-circle')[tickIndex]).addClass("_expanded_").attr("r", "7");
         },
         onmouseout: function(id) { 
+          $('.c3-shapes-'+id.name+'.c3-circles-'+id.name+' .c3-circle').removeClass("_expanded_").attr("r", "2.5");
           var $chartLines = $('#chart1').find('.c3-chart-line');
+          var $legendItem = $('#chart1').find('.c3-legend-item');
           $chartLines.each(function(){
             $(this).removeClass('c3-defocused');
+          })
+          $legendItem.each(function(){
+            var $this = $(this);
+            if (!$this.hasClass('c3-legend-item-'+id.name+'')){
+              $this.css('opacity', '1');
+            }
           })
         }
       },
@@ -130,11 +152,9 @@ $(function () {
       if(activeData.hasClass('active')){
         console.log("already active...");
       } else {
-        activeData.toggleClass('active');
-        activeData.attr('aria-pressed', 'true')
+        activeData.toggleClass('active').attr('aria-pressed', 'true')
         var sibling = activeData.siblings('.btn-default');
-        sibling.removeClass('active');
-        sibling.attr('aria-pressed', 'false');
+        sibling.removeClass('active').attr('aria-pressed', 'false');
         var dataType = activeData.attr("data-id");
         setData(dataType);
       }
@@ -144,21 +164,19 @@ $(function () {
     getDataFields(dataTypes.quantity.cartoSql);
 
     function setData(dataType){
-
       setTimeout(function() {
         chart1.unload();
         chart2.unload();
-        chart2.toggle();
+        // chart2.toggle();
         $('#chart2 .c3-chart-arcs-title').toggle();
       }, 200);
 
       setTimeout(function() {
-        getLabels(dataTypes[dataType]);
-        getDataFields(dataTypes[dataType]);
+        getLabels(dataTypes[dataType].cartoSql);
+        getDataFields(dataTypes[dataType].cartoSql);
         $('#chart2 .c3-chart-arcs-title').toggle();
         chart2.toggle();
       }, 500);
-      console.log(dataTypes[dataType]);
 
       // if(activeData.attr("data-id") === "quantity") {
       //   if(typeof chart1 !== "undefined"){
