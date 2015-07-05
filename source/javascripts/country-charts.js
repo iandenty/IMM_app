@@ -160,50 +160,22 @@ $(function () {
       }
     })
 
-    getLabels(dataTypes.quantity.cartoSql);
-    getDataFields(dataTypes.quantity.cartoSql);
-
     function setData(dataType){
       setTimeout(function() {
         chart1.unload();
         chart2.unload();
-        // chart2.toggle();
+        chart2.toggle();
         $('#chart2 .c3-chart-arcs-title').toggle();
       }, 200);
 
       setTimeout(function() {
         getLabels(dataTypes[dataType].cartoSql);
-        getDataFields(dataTypes[dataType].cartoSql);
         $('#chart2 .c3-chart-arcs-title').toggle();
         chart2.toggle();
       }, 500);
-
-      // if(activeData.attr("data-id") === "quantity") {
-      //   if(typeof chart1 !== "undefined"){
-      //     chart1.unload();
-      //     chart2.unload();
-      //     dataSet = dataTableQuantity;
-      //     console.log(dataSet)
-      //     getLabels(dataSet);
-      //     getDataFields(dataSet);
-      //   }
-      //   var dataSet = "quantity";
-      //   getLabels();
-      //   getDataFields();
-      // } else if(activeData.attr("data-id") === "value") {
-      //   if(typeof chart1 !== "undefined"){
-      //     chart1.unload();
-      //     chart2.unload();
-      //     dataSet = dataTableValue;
-      //     console.log(dataSet)
-      //     getLabels(dataSet);
-      //     getDataFields(dataSet);
-      //   }
-      //   var dataSet = "value";
-      //   getLabels(dataSet);
-      //   getDataFields(dataSet);
-      // }
     }
+
+    getLabels(dataTypes.quantity.cartoSql);
 
     //Get labels
     function getLabels(dataSet){
@@ -221,6 +193,7 @@ $(function () {
         chartDetails.axis.x.tick['values'] = tickLabels;
         chartDetails.data.columns.unshift(labels);
       });
+        getDataFields(dataSet);
     }
 
     // Get distinct dataFields
@@ -252,10 +225,6 @@ $(function () {
    //  , {countryName: countryID, productGroup: dataField} "+countryID+"
 
     function getData(dataField, dataSet){
-      // if(inputString.indexOf("'") > -1){
-
-      // }
-      // var cote = "Côte d''Ivoire"
 
       allDataForField = [];
       var allDataForField = [dataField];
@@ -321,6 +290,10 @@ $(function () {
 
         }, 
       });
+      
+      debugger
+      dataTypes.value.chartData = (chartDetails);
+      console.log(dataTypes)
 
     }, 1000);
 
