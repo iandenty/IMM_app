@@ -178,11 +178,10 @@ $(function () {
           unload: chart2.columns
         })
         
-        donutDetails = {};
-        $('#chart2 .c3-chart-arcs').toggle();
-        // chart1.unload();
-        // chart2.unload();
-        // chart2.toggle();
+        donutDetails.columns.length = 0;
+        // donutDetails = {};
+        // $('#chart2 .c3-chart-arcs').toggle();
+
 
       }, 200);
 
@@ -306,6 +305,10 @@ $(function () {
             columns: chartData
           });
 
+          mouseOverlay(chartData);
+
+          // populatePie(chartData);
+
         }
 
       }
@@ -315,49 +318,56 @@ $(function () {
           chart2 = c3.generate(defaultDonut);
           chart2.legend.hide('default1');
 
-          var rectangles = [].slice.call($('#chart1 svg').find('.c3-event-rect'));
-          for (var i = 0; i < rectangles.length; i++) {
-            appendRect(rectangles[i]);
-          }
-
-          $('.overlay').on({
-            "mouseover": function() { 
-
-              setTimeout(function () {
-                chart2.unload();
-              }, 500);
-
-              indexArray = $(this).attr("data-id");
-              intArrayIndex = (parseInt(indexArray) + 1);
-              populatePie(intArrayIndex, chartData);
-
-              setTimeout(function () {
-                chart2.load(donutDetails);
-              }, 1000);
-
-            },
-            "mouseout":  function() { 
-            }, 
-            "click":  function() { 
-
-              setTimeout(function () {
-                chart2.unload();
-              }, 200);
-
-              indexArray = $(this).attr("data-id");
-              intArrayIndex = (parseInt(indexArray) + 1);
-              populatePie(intArrayIndex, chartData);
-
-              setTimeout(function () {
-                chart2.load(donutDetails);
-              }, 500);
-
-              $('.overlay').off("mouseover");
-
-            }, 
-          });
+          mouseOverlay(chartData);
 
       }
+
+
+    }
+
+    function mouseOverlay(chartData){
+
+      var rectangles = [].slice.call($('#chart1 svg').find('.c3-event-rect'));
+      for (var i = 0; i < rectangles.length; i++) {
+        appendRect(rectangles[i]);
+      }
+
+      $('.overlay').on({
+        "mouseover": function() { 
+
+          setTimeout(function () {
+            chart2.unload();
+          }, 500);
+
+          indexArray = $(this).attr("data-id");
+          intArrayIndex = (parseInt(indexArray) + 1);
+          populatePie(intArrayIndex, chartData);
+
+          setTimeout(function () {
+            chart2.load(donutDetails);
+          }, 1000);
+
+        },
+        "mouseout":  function() { 
+        }, 
+        "click":  function() { 
+
+          setTimeout(function () {
+            chart2.unload();
+          }, 200);
+
+          indexArray = $(this).attr("data-id");
+          intArrayIndex = (parseInt(indexArray) + 1);
+          populatePie(intArrayIndex, chartData);
+
+          setTimeout(function () {
+            chart2.load(donutDetails);
+          }, 500);
+
+          $('.overlay').off("mouseover");
+
+        }, 
+      });
 
     }
 
@@ -374,11 +384,19 @@ $(function () {
 
     function populatePie(intArrayIndex, chartData){
       donutDetails.columns.length = 0;
-      
-      for (var i = 0; i < chartData.data.columns.length; i++) {
+      var columnData;
+      if("columns" in chartData){
+        columnData = chartData.data.columns;
+      }
+      else {
+        columnData = chartData;
+      }
+
+
+      for (var i = 0; i < columnData.length; i++) {
         var dataColumn = [];
-        dataLabel = chartData.data.columns[i][0];
-        dataValue = chartData.data.columns[i][intArrayIndex];
+        dataLabel = columnData[i][0];
+        dataValue = columnData[i][intArrayIndex];
         if(dataLabel !== year) {
           dataColumn.push(dataLabel, dataValue);
         } else {
