@@ -8,11 +8,16 @@ $(function () {
       value: {
         cartoSql: 'all_value_figures',
         unit: '1000 USD',
+        lineChartID: '#chart1',
+        donutChartID: '#chart2',
         chartData: {}
       },
       quantity: {
         cartoSql: 'all_quantity_figures',
         unit: '1000 RWE m3',
+        chartID: '#chart1',
+        lineChartID: '#chart1',
+        donutChartID: '#chart2',
         chartData: {}
       }
     }
@@ -160,12 +165,23 @@ $(function () {
       }
     })
 
+    getLabels(dataTypes.quantity.cartoSql);
+
     function setData(dataType){
       setTimeout(function() {
-        chart1.unload();
-        chart2.unload();
-        chart2.toggle();
-        $('#chart2 .c3-chart-arcs-title').toggle();
+        chart1.load({
+          unload: chart1.columns
+        })
+        chart2.load({
+          unload: chart2.columns
+        })
+        
+        donutDetails = {};
+        $('#chart2 .c3-chart-arcs').toggle();
+        // chart1.unload();
+        // chart2.unload();
+        // chart2.toggle();
+
       }, 200);
 
       setTimeout(function() {
@@ -174,8 +190,6 @@ $(function () {
         chart2.toggle();
       }, 500);
     }
-
-    getLabels(dataTypes.quantity.cartoSql);
 
     //Get labels
     function getLabels(dataSet){
@@ -211,9 +225,29 @@ $(function () {
           chartDetails.data.colors[dataFields[i]] = hexColors[i];
           defaultDonut.data.colors[dataFields[i]] = hexColors[i];
           chartDetails.data.types[dataFields[i]] = chartType;
-          getData(dataFields[i], dataSet);
+          // getData(dataFields[i], dataSet);
+          dataRequest(dataFields[i]);
         }
       });
+      function dataRequest(dataField){
+        allDataForField = [];
+        var allDataForField = [dataField];
+        var sqlStatement = "SELECT amount " +
+                         "FROM "+dataSet+"" +
+                         " WHERE country_name='"+countryID.replace(/'/g, "''")+"'  AND product_group='"+dataField+"'";
+                         console.log(sqlStatement)
+        sql.execute(sqlStatement)
+        .done(function(data) {
+          for (var i = 0; i < data.rows.length; i++) {
+            allDataForField.push(data.rows[i].amount);
+          }
+         chartDetails.data.columns.unshift(allDataForField);
+
+         console.log("all data", dataSet, allDataForField);
+         console.log("tester dataset", dataSet, chartDetails);
+        })
+      }
+      loadCharts(dataSet);
     }
 
 
@@ -224,78 +258,103 @@ $(function () {
    //                     "WHERE country_name = {{countryName}} AND product_group = {{productGroup}}";
    //  , {countryName: countryID, productGroup: dataField} "+countryID+"
 
-    function getData(dataField, dataSet){
-
-      allDataForField = [];
-      var allDataForField = [dataField];
-      var sqlStatement = "SELECT amount " +
-                       "FROM "+dataSet+"" +
-                       " WHERE country_name='"+countryID.replace(/'/g, "''")+"'  AND product_group='"+dataField+"'";
-                       console.log(sqlStatement)
-      sql.execute(sqlStatement)
-      .done(function(data) {
-        for (var i = 0; i < data.rows.length; i++) {
-          allDataForField.push(data.rows[i].amount);
+    function loadCharts(dataSet){
+      if(dataSet===dataTypes.value.cartoSql){
+        if($.isEmptyObject(dataTypes.value.chartData)){
+          console.log("push", chartDetails)
+          dataTypes.value.chartData = chartDetails;
+          loadLineChart(dataTypes.value.chartData);
+          console.log("test to look", dataTypes)
         }
-       chartDetails.data.columns.unshift(allDataForField);
-      })
-    }
-
-    setTimeout(function () {
-      console.log(chartDetails);
-      console.log(defaultDonut);
-
-      chart1 = c3.generate(chartDetails);
-      chart2 = c3.generate(defaultDonut);
-      chart2.legend.hide('default1');
-
-      var rectangles = [].slice.call($('#chart1 svg').find('.c3-event-rect'));
-      for (var i = 0; i < rectangles.length; i++) {
-        appendRect(rectangles[i]);
+        else {
+          loadLineChart(dataTypes.value.chartData);
+        }
+      } 
+      else if(dataSet===dataTypes.quantity.cartoSql){
+        if($.isEmptyObject(dataTypes.quantity.chartData)){
+          dataTypes.quantity.chartData = chartDetails;
+          loadLineChart(dataTypes.quantity.chartData);
+        }
+        else {
+          loadLineChart(dataTypes.quantity.chartData);
+        }
       }
 
-      $('.overlay').on({
-        "mouseover": function() { 
 
-          setTimeout(function () {
-            chart2.unload();
-          }, 500);
+      function loadLineChart(chartData){
+        setTimeout(function() {
 
-          indexArray = $(this).attr("data-id");
-          intArrayIndex = (parseInt(indexArray) + 1);
-          populatePie(intArrayIndex);
+          console.log("test", dataTypes);
+          if($('#chart1 svg').length===0){
+            chart1 = c3.generate(chartData);
+            loadPieChart(chartData);
+          }
+          else {
+            chart1.load(chartData);
+            console.log("hello...", chartData);
 
-          setTimeout(function () {
-            chart2.load(donutDetails);
-          }, 800);
+          }
 
-        },
-        "mouseout":  function() { 
-        }, 
-        "click":  function() { 
 
-          setTimeout(function () {
-            chart2.unload();
-          }, 500);
 
-          indexArray = $(this).attr("data-id");
-          intArrayIndex = (parseInt(indexArray) + 1);
-          populatePie(intArrayIndex);
 
-          setTimeout(function () {
-            chart2.load(donutDetails);
-          }, 800);
+        }, 700);
 
-          $('.overlay').off("mouseover");
+      }
 
-        }, 
-      });
-      
-      debugger
-      dataTypes.value.chartData = (chartDetails);
-      console.log(dataTypes)
+      function loadPieChart(chartData){
 
-    }, 1000);
+          chart2 = c3.generate(defaultDonut);
+          chart2.legend.hide('default1');
+
+          var rectangles = [].slice.call($('#chart1 svg').find('.c3-event-rect'));
+          for (var i = 0; i < rectangles.length; i++) {
+            appendRect(rectangles[i]);
+          }
+
+          $('.overlay').on({
+            "mouseover": function() { 
+
+              setTimeout(function () {
+                chart2.unload();
+              }, 500);
+
+              indexArray = $(this).attr("data-id");
+              intArrayIndex = (parseInt(indexArray) + 1);
+              populatePie(intArrayIndex, chartData);
+
+              setTimeout(function () {
+                chart2.load(donutDetails);
+              }, 1000);
+
+            },
+            "mouseout":  function() { 
+            }, 
+            "click":  function() { 
+
+              setTimeout(function () {
+                chart2.unload();
+              }, 200);
+
+              indexArray = $(this).attr("data-id");
+              intArrayIndex = (parseInt(indexArray) + 1);
+              populatePie(intArrayIndex, chartData);
+
+              setTimeout(function () {
+                chart2.load(donutDetails);
+              }, 500);
+
+              $('.overlay').off("mouseover");
+
+            }, 
+          });
+
+      }
+
+    }
+
+
+
 
 
     function appendRect(rectangle){
@@ -307,12 +366,13 @@ $(function () {
       $(rectangle).append('rect').attr({"class": "overlay", "data-id": arrayNo, "width": width , "height": height, "rx": "2", "ry": "2"});
     }
 
-    function populatePie(intArrayIndex){
+    function populatePie(intArrayIndex, chartData){
       donutDetails.columns.length = 0;
-      for (var i = 0; i < chartDetails.data.columns.length; i++) {
+      
+      for (var i = 0; i < chartData.data.columns.length; i++) {
         var dataColumn = [];
-        dataLabel = chartDetails.data.columns[i][0];
-        dataValue = chartDetails.data.columns[i][intArrayIndex];
+        dataLabel = chartData.data.columns[i][0];
+        dataValue = chartData.data.columns[i][intArrayIndex];
         if(dataLabel !== year) {
           dataColumn.push(dataLabel, dataValue);
         } else {
