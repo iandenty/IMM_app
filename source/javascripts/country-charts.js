@@ -39,7 +39,6 @@ $(function () {
           onmouseover: function(id) { 
             var $pieSegments = $('#chart2').find('.c3-chart-arc');
             $pieSegments.each(function(){
-              console.log($(this))
               var $this = $(this);
               if ($this.hasClass('c3-target-'+id+'')){
                 $this.addClass('c3-focused');
@@ -64,7 +63,7 @@ $(function () {
           }
         },
         y: {
-          label: '1000 m3 RWE'
+          label: 'hello'
         }
       }
     }
@@ -161,6 +160,9 @@ $(function () {
         var sibling = activeData.siblings('.btn-default');
         sibling.removeClass('active').attr('aria-pressed', 'false');
         var dataType = activeData.attr("data-id");
+        chartDetails.data.columns = [];
+
+
         setData(dataType);
       }
     })
@@ -214,7 +216,6 @@ $(function () {
     function getDataFields(dataSet){
       var chartType = "area-spline";
       dataFields = [];
-      console.log("SELECT DISTINCT product_group FROM "+dataSet+"")
       sql.execute("SELECT DISTINCT product_group FROM "+dataSet+"")
         .done(function(data) {
         for (var i = 0; i < data.rows.length; i++) {
@@ -230,12 +231,12 @@ $(function () {
         }
       });
       function dataRequest(dataField){
+        chartDetails.columns = [];
         allDataForField = [];
         var allDataForField = [dataField];
         var sqlStatement = "SELECT amount " +
                          "FROM "+dataSet+"" +
                          " WHERE country_name='"+countryID.replace(/'/g, "''")+"'  AND product_group='"+dataField+"'";
-                         console.log(sqlStatement)
         sql.execute(sqlStatement)
         .done(function(data) {
           for (var i = 0; i < data.rows.length; i++) {
@@ -243,8 +244,6 @@ $(function () {
           }
          chartDetails.data.columns.unshift(allDataForField);
 
-         console.log("all data", dataSet, allDataForField);
-         console.log("tester dataset", dataSet, chartDetails);
         })
       }
       loadCharts(dataSet);
@@ -259,46 +258,55 @@ $(function () {
    //  , {countryName: countryID, productGroup: dataField} "+countryID+"
 
     function loadCharts(dataSet){
+
       if(dataSet===dataTypes.value.cartoSql){
         if($.isEmptyObject(dataTypes.value.chartData)){
-          console.log("push", chartDetails)
-          dataTypes.value.chartData = chartDetails;
-          loadLineChart(dataTypes.value.chartData);
-          console.log("test to look", dataTypes)
+          setTimeout(function() {
+
+            chartDetails.axis.y.label = dataTypes.value.unit;
+            dataTypes.value.chartData = chartDetails.data.columns;
+            loadLineChart(dataTypes.value.chartData, dataTypes.value.unit);
+
+          }, 700);
         }
         else {
-          loadLineChart(dataTypes.value.chartData);
+          loadLineChart(dataTypes.value.chartData, dataTypes.value.unit);
         }
       } 
       else if(dataSet===dataTypes.quantity.cartoSql){
         if($.isEmptyObject(dataTypes.quantity.chartData)){
-          dataTypes.quantity.chartData = chartDetails;
-          loadLineChart(dataTypes.quantity.chartData);
+
+          setTimeout(function() {
+
+            chartDetails.axis.y.label = dataTypes.quantity.unit;
+            dataTypes.quantity.chartData = chartDetails.data.columns;
+            loadLineChart(chartDetails, dataTypes.quantity.unit);
+
+          }, 700);
         }
         else {
-          loadLineChart(dataTypes.quantity.chartData);
+          loadLineChart(dataTypes.quantity.chartData, dataTypes.quantity.unit);
         }
       }
 
 
-      function loadLineChart(chartData){
-        setTimeout(function() {
 
-          console.log("test", dataTypes);
-          if($('#chart1 svg').length===0){
-            chart1 = c3.generate(chartData);
-            loadPieChart(chartData);
-          }
-          else {
-            chart1.load(chartData);
-            console.log("hello...", chartData);
+      function loadLineChart(chartData, axisLabel){
 
-          }
+        if($('#chart1 svg').length===0){
 
+          chart1 = c3.generate(chartData);
+          // chartDetails.data.columns = [];
+          loadPieChart(chartData);
 
+        }
+        else {
+          chart1.axis.labels({y: axisLabel});
+          chart1.load({
+            columns: chartData
+          });
 
-
-        }, 700);
+        }
 
       }
 
@@ -352,8 +360,6 @@ $(function () {
       }
 
     }
-
-
 
 
 
