@@ -161,8 +161,6 @@ $(function () {
         sibling.removeClass('active').attr('aria-pressed', 'false');
         var dataType = activeData.attr("data-id");
         chartDetails.data.columns = [];
-
-
         setData(dataType);
       }
     })
@@ -177,25 +175,17 @@ $(function () {
         chart2.load({
           unload: chart2.columns
         })
-        
-        donutDetails.columns.length = 0;
-        // donutDetails = {};
-        // $('#chart2 .c3-chart-arcs').toggle();
-
 
       }, 200);
 
       setTimeout(function() {
         getLabels(dataTypes[dataType].cartoSql);
-        $('#chart2 .c3-chart-arcs-title').toggle();
-        chart2.toggle();
+        $('#chart2 .c3-chart-arcs-title').hide();
       }, 500);
     }
 
-    //Get labels
     function getLabels(dataSet){
       labels = [];
-      // labels.push(year);
       sql.execute("SELECT DISTINCT year FROM "+dataSet+"")
         .done(function(data) {
         for (var i = 0; i < data.rows.length; i++) {
@@ -249,13 +239,6 @@ $(function () {
     }
 
 
-    // '"+countryID+"'
-
-   // var sqlStatement =  "SELECT amount " +
-   //                     "FROM all_quantity_figures " +
-   //                     "WHERE country_name = {{countryName}} AND product_group = {{productGroup}}";
-   //  , {countryName: countryID, productGroup: dataField} "+countryID+"
-
     function loadCharts(dataSet){
 
       if(dataSet===dataTypes.value.cartoSql){
@@ -266,7 +249,7 @@ $(function () {
             dataTypes.value.chartData = chartDetails.data.columns;
             loadLineChart(dataTypes.value.chartData, dataTypes.value.unit);
 
-          }, 700);
+          }, 1000);
         }
         else {
           loadLineChart(dataTypes.value.chartData, dataTypes.value.unit);
@@ -281,7 +264,7 @@ $(function () {
             dataTypes.quantity.chartData = chartDetails.data.columns;
             loadLineChart(chartDetails, dataTypes.quantity.unit);
 
-          }, 700);
+          }, 1000);
         }
         else {
           loadLineChart(dataTypes.quantity.chartData, dataTypes.quantity.unit);
@@ -289,43 +272,43 @@ $(function () {
       }
 
 
-
       function loadLineChart(chartData, axisLabel){
 
         if($('#chart1 svg').length===0){
 
           chart1 = c3.generate(chartData);
-          // chartDetails.data.columns = [];
           loadPieChart(chartData);
 
         }
         else {
+          donutDetails.columns.length = 0;
+          console.log(JSON.stringify(defaultDonut.data.columns))
           chart1.axis.labels({y: axisLabel});
           chart1.load({
             columns: chartData
           });
-
+          chart2.load({
+            columns: defaultDonut.data.columns
+          });
           mouseOverlay(chartData);
-
-          // populatePie(chartData);
-
+          $('#chart2 .c3-chart-arcs-title').hide();
         }
 
       }
 
       function loadPieChart(chartData){
+        chart2 = c3.generate(defaultDonut);
+        chart2.legend.hide('default1');
 
-          chart2 = c3.generate(defaultDonut);
-          chart2.legend.hide('default1');
 
-          mouseOverlay(chartData);
+        mouseOverlay(chartData);
 
       }
-
-
     }
 
+
     function mouseOverlay(chartData){
+
 
       var rectangles = [].slice.call($('#chart1 svg').find('.c3-event-rect'));
       for (var i = 0; i < rectangles.length; i++) {
@@ -334,10 +317,8 @@ $(function () {
 
       $('.overlay').on({
         "mouseover": function() { 
-
-          setTimeout(function () {
-            chart2.unload();
-          }, 500);
+          $('#chart2 .c3-chart-arcs-title').show();
+          chart2.unload();
 
           indexArray = $(this).attr("data-id");
           intArrayIndex = (parseInt(indexArray) + 1);
@@ -345,7 +326,7 @@ $(function () {
 
           setTimeout(function () {
             chart2.load(donutDetails);
-          }, 1000);
+          }, 300);
 
         },
         "mouseout":  function() { 
@@ -370,7 +351,6 @@ $(function () {
       });
 
     }
-
 
 
     function appendRect(rectangle){
