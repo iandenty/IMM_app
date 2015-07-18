@@ -1,0 +1,81 @@
+---
+title: ProjectIMM
+---
+
+
+<div class="content">
+  <div class="commodity map">
+    <div id="map"></div>
+    <div class="options-container">
+
+      <div class="button-container">
+        <div class="btn-group">
+          <button type="button" class="btn btn-default" data-id="quantity">Quantity</button>
+          <button type="button" class="btn btn-default" data-id="value">Value</button>
+        </div>
+      </div>
+
+      <div class="options">
+        <form action="#">
+
+          <fieldset>
+            <legend>Flegt status:</legend>
+            <ul>
+              <li>
+                <input type="checkbox" name="vpa-status" id="pre-negotiations" value="pre-negotiations" checked="checked" />
+                <label for="furnture">Pre-negotiations</label>
+              </li>
+              <li>
+                <input type="checkbox" name="vpa-status" id="negotiation" value="negotiation"/>
+                <label for="paper">Negotiation</label>
+
+              </li>
+              <li>
+                <input type="checkbox" name="vpa-status" id="preparation" value="preparation"/>
+                <label for="pulp">Preparation</label>
+              </li>
+              <li>
+                <input type="checkbox" name="vpa-status" id="implementation" value="implementation"/>
+                <label for="wood">Implementation</label>
+              </li>
+            </ul>
+          </fieldset>
+
+
+          <fieldset>
+            <legend>Commodity:</legend>
+            <ul>
+              <li>
+                <input type="radio" name="commodity" id="furniture" value="furniture" checked="checked" />
+                <label for="furnture">Furniture</label>
+              </li>
+              <li>
+                <input type="radio" name="commodity" id="paper" value="paper"/>
+                <label for="paper">Paper</label>
+
+              </li>
+              <li>
+                <input type="radio" name="commodity" id="pulp" value="pulp"/>
+                <label for="pulp">Pulp</label>
+              </li>
+              <li>
+                <input type="radio" name="commodity" id="wood" value="wood"/>
+                <label for="wood">Wood</label>
+              </li>
+            </ul>
+          </fieldset>
+
+          <div class="year-slider">
+            <label for="year">Year:</label>
+            <output for="year" id="output-year">2004</output>
+            <input type="range" min="2004" max="2013" value="2004" id="year" step="1">
+          </div>
+
+          <button id="map-update" type="button">Update map</button>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
