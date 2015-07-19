@@ -13,8 +13,9 @@ $(function () {
           window.location = "countries/"+vpaStatus+"/"+countryName+"/"
           console.log(vpaStatus, countryName);
         });
-        layers[1].on('featureOver', function(e, latlng, pos, data, layerNumber) {
-          $('#map').css('cursor', 'pointer');
+        layers[1].on('featureOver', function() {
+          $('.main #map').css('cursor', 'pointer');
+          console.log("hello");
         });
 
         // you can get the native map to work with it

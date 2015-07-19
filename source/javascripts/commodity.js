@@ -14,11 +14,28 @@ $(function() {
 
     map.addLayer(layer);
 
-
+    //update output from slider
     $('#year').change(function(){
       console.log($('#year').val())
       $('#output-year').val($('#year').val());
     })
+
+    //style buttons
+    var buttons = $('.btn-group').find($('button'));
+    buttons.click(function(){
+      activeData = $(this);
+      if(activeData.hasClass('active')){
+        console.log("already active...");
+      } else {
+        activeData.toggleClass('active').attr('aria-pressed', 'true')
+        var sibling = activeData.siblings('.btn-default');
+        sibling.removeClass('active').attr('aria-pressed', 'false');
+        var dataType = activeData.attr("data-id");
+      }
+    })
+
+
+
 
 
 

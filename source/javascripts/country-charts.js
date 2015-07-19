@@ -1,5 +1,6 @@
 $(function () { 
-  if($('#chart1, #chart2, .btn-group').length){
+  if($('#chart1, #chart2').length){
+
     var chart1;
     var chart2;
     var year = 'year';
@@ -225,7 +226,7 @@ $(function () {
         var allDataForField = [dataField];
         var sqlStatement = "SELECT amount " +
                          "FROM "+dataSet+"" +
-                         " WHERE country_name='"+countryID.replace(/'/g, "''")+"'  AND product_group='"+dataField+"'";
+                         " WHERE country_name ilike '%"+countryID.replace(/'/g, "''")+"%'  AND product_group='"+dataField+"'";
         sql.execute(sqlStatement)
         .done(function(data) {
           for (var i = 0; i < data.rows.length; i++) {
