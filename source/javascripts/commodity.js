@@ -16,7 +16,6 @@ $(function() {
 
     //update output from slider
     $('#year').change(function(){
-      console.log($('#year').val())
       $('#output-year').val($('#year').val());
     })
 
@@ -34,8 +33,97 @@ $(function() {
       }
     })
 
+    var sql = new cartodb.SQL({ user: 'iandenty', format: 'geojson'  });
 
 
+    
+    // var  = L.geoJson().addTo(map);
+    var vpaLayer = {
+      "pre-negotiations" : L.geoJson(),
+      "negotiation" : L.geoJson(),
+      "preparation" : L.geoJson(),
+      "implementation" : L.geoJson(),
+    }
+
+    // var preNegotiations = L.geoJson();
+    // var negotiations = L.geoJson();
+    // var preparation = L.geoJson();
+    // var implementation = L.geoJson();
+
+    // console.log("neo", vpaLayer)
+
+    getVpa();
+
+    var countryLayerGroup = new L.LayerGroup();
+    // vpaCss = $("#vpa-css").text();
+    // countryLayerGroup.setCartoCSS();
+
+    $('#commodity-form').submit(function(event){
+      var values = $(this).serializeArray();
+      event.preventDefault();
+
+      var activeCountries = [];
+
+      for(var i = 0; i < values.length; i++){
+        var name = values[i].name.toLowerCase()
+        var value = values[i].value.toLowerCase()
+        switch (name) {
+          case "vpa-status":
+            activeCountries.push(value);
+            break;
+          case "commodity":
+            console.log(value);
+            break;
+          case "year":
+            console.log(value);
+            break;   
+        }
+      }
+      console.log(activeCountries);
+      updateCountries(activeCountries);
+
+    })
+
+
+    function updateCountries(activeCountries){
+      countryLayerGroup.clearLayers();
+      for(var i = 0; i < activeCountries.length; i++){
+
+        if(vpaLayer.hasOwnProperty(activeCountries[i])) {
+            countryLayerGroup.addLayer(vpaLayer[activeCountries[i]]);
+        }
+
+      }
+      countryLayerGroup.addTo(map);
+
+    }
+
+
+    function getVpa(){
+      var vpaCountryTable = 'country_iso_only_1';
+      var sqlStatement = "SELECT * " +
+                           "FROM "+vpaCountryTable+"";
+      sql.execute(sqlStatement)
+      .done(function(geojson) {
+        for(var i = 0; i < geojson.features.length; i++){
+          vpaStatus = geojson.features[i].properties.vpa_status.toLowerCase();
+          switch (vpaStatus) {
+            case "pre-negotiations":
+              vpaLayer["pre-negotiations"].addData(geojson.features[i]);
+              break;
+            case "negotiation":
+              vpaLayer["negotiation"].addData(geojson.features[i]);
+              break;
+            case "preparation":
+              vpaLayer["preparation"].addData(geojson.features[i]);
+              break;
+            case "implementation":
+              vpaLayer["implementation"].addData(geojson.features[i]);
+              break;
+          }
+        }
+      })
+    }
 
 
 

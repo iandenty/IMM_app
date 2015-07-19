@@ -2,7 +2,29 @@
 title: ProjectIMM
 ---
 
+<style id="vpa-css" type="cartocss/text">
+  /** category visualization */
 
+  #country_iso_only_1 {
+     polygon-opacity: 0.7;
+     line-color: #FFF;
+     line-width: 1;
+     line-opacity: 1;
+  }
+
+  #country_iso_only_1[vpa_status="Pre-negotiations"] {
+     polygon-fill: #A6CEE3;
+  }
+  #country_iso_only_1[vpa_status="Negotiation"] {
+     polygon-fill: #1F78B4;
+  }
+  #country_iso_only_1[vpa_status="Implementation"] {
+     polygon-fill: #33a02c;
+  }
+  #country_iso_only_1[vpa_status="Preparation"] {
+     polygon-fill: #b2df8a;
+  }
+</style>
 <div class="content">
   <div class="commodity map">
     <div id="map"></div>
@@ -16,7 +38,7 @@ title: ProjectIMM
       </div>
 
       <div class="options">
-        <form action="#">
+        <form id="commodity-form">
 
           <fieldset>
             <legend>Flegt status:</legend>
@@ -65,13 +87,17 @@ title: ProjectIMM
             </ul>
           </fieldset>
 
-          <div class="year-slider">
-            <label for="year">Year:</label>
-            <output for="year" id="output-year">2004</output>
-            <input type="range" min="2004" max="2013" value="2004" id="year" step="1">
-          </div>
 
-          <button id="map-update" class="btn-block" type="button">Update map</button>
+          <fieldset>
+            <div class="year-slider">
+              <label for="year">Year:</label>
+              <output for="year" id="output-year">2004</output>
+              <input name="year" type="range" min="2004" max="2013" value="2004" id="year" step="1">
+            </div>
+          </fieldset>
+
+
+          <button type="submit" id="map-update" class="btn-block" type="button">Update map</button>
 
         </form>
       </div>
