@@ -10,7 +10,9 @@ $(function() {
         scrollWheelZoom: false,
         center: [0, 0],
         zoom: 2
-    });
+    })
+
+  
 
     map.addLayer(layer);
 
@@ -45,17 +47,12 @@ $(function() {
       "implementation" : L.geoJson(),
     }
 
-    // var preNegotiations = L.geoJson();
-    // var negotiations = L.geoJson();
-    // var preparation = L.geoJson();
-    // var implementation = L.geoJson();
-
-    // console.log("neo", vpaLayer)
-
     getVpa();
 
     var countryLayerGroup = new L.LayerGroup();
-    // vpaCss = $("#vpa-css").text();
+
+    // L.control.layers(countryLayerGroup).addTo(map)
+    var vpaCss = $("#vpa-css").text();
     // countryLayerGroup.setCartoCSS();
 
     $('#commodity-form').submit(function(event){
@@ -79,7 +76,6 @@ $(function() {
             break;   
         }
       }
-      console.log(activeCountries);
       updateCountries(activeCountries);
 
     })
@@ -90,12 +86,11 @@ $(function() {
       for(var i = 0; i < activeCountries.length; i++){
 
         if(vpaLayer.hasOwnProperty(activeCountries[i])) {
-            countryLayerGroup.addLayer(vpaLayer[activeCountries[i]]);
+          countryLayerGroup.addLayer(vpaLayer[activeCountries[i]])
         }
 
       }
-      countryLayerGroup.addTo(map);
-
+      countryLayerGroup.addTo(map)
     }
 
 
