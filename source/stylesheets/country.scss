@@ -57,5 +57,23 @@
     margin: 0 auto;
   } button {
     font-family: 'Raleway', sans-serif;
+    border: 1px solid rgba(83, 83, 83, 1.0);
+    &.active {
+      border: 1px solid #535353;
+
+    }
+  }
+  .active {
+    border: 1px solid #535353;
+  }
+} 
+
+
+.titles {
+  h3 {
+    display: inline-block;
+  }
+  h4 {
+    display: inline-block;
   }
 }
