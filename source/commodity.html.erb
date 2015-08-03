@@ -2,11 +2,12 @@
 title: ProjectIMM
 ---
 
+<!-- Country styling -->
 <style id="vpa-css" type="cartocss/text">
   /** category visualization */
 
   #country_iso_only_1 {
-     polygon-opacity: 0.7;
+     polygon-opacity: 0.9;
      line-color: #FFF;
      line-width: 1;
      line-opacity: 1;
@@ -25,6 +26,53 @@ title: ProjectIMM
      polygon-fill: #b2df8a;
   }
 </style>
+
+<style id="commodity-css" type="cartocss/text">
+  /** bubble visualization */
+
+  #all_quantity_figures{
+    marker-fill-opacity: 0.5;
+    marker-line-color: #1F77B4;
+    marker-line-width: 2;
+    marker-line-opacity: 1;
+    marker-placement: point;
+    marker-multi-policy: largest;
+    marker-type: ellipse;
+    marker-fill: #1F77B4;
+    marker-allow-overlap: true;
+    marker-clip: false;
+  }
+  #all_quantity_figures [ amount <= 2613.1] {
+     marker-width: 100.0;
+  }
+  #all_quantity_figures [ amount <= 1213.8] {
+     marker-width: 90.0;
+  }
+  #all_quantity_figures [ amount <= 643.1] {
+     marker-width: 80.0;
+  }
+  #all_quantity_figures [ amount <= 316] {
+     marker-width: 70.0;
+  }
+  #all_quantity_figures [ amount <= 152.8] {
+     marker-width: 60.0;
+  }
+  #all_quantity_figures [ amount <= 70] {
+     marker-width: 50.0;
+  }
+  #all_quantity_figures [ amount <= 40] {
+     marker-width: 40.0;
+  }
+  #all_quantity_figures [ amount <= 24.5] {
+     marker-width: 30.0;
+  }
+  #all_quantity_figures [ amount <= 9.5] {
+     marker-width: 20.0;
+  }
+  #all_quantity_figures [ amount <= 3.8] {
+     marker-width: 10.0;
+  }
+  </style>
 
 <div class="content">
   <div class="commodity map">

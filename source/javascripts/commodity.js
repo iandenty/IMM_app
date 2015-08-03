@@ -55,6 +55,8 @@ $(function() {
       event.preventDefault();
 
       var activeCountries = [];
+      var commodity;
+      var year;
 
       for(var i = 0; i < values.length; i++){
         var name = values[i].name.toLowerCase();
@@ -64,106 +66,100 @@ $(function() {
             activeCountries.push(value);
             break;
           case "commodity":
-            console.log(value);
+            commodity = value;
             break;
           case "year":
-            console.log(value);
+            year = value;
             break;   
         }
       }
-      updateCountries(activeCountries);
+      var vpaCountries = activeCountries.join("','");
+      updateCountries(vpaCountries);
+      updateCommodity(commodity, year, vpaCountries);
+
+
+      setTimeout(function(){ 
+
+        loadMap();
+
+      }, 500);
+
     })
 
 
-    //add countries to layerSource
-    function updateCountries(activeCountries){
+    //add countries to layerSource OR set SQL
+    function updateCountries(vpaCountries){
+      
+      if(layerSource.sublayers.length === 0){
 
-      for(var i = 0; i < activeCountries.length; i++){
-        layerSource.sublayers.push({
-          sql: "SELECT * FROM country_iso_only_1 WHERE vpa_status='"+activeCountries[i]+"'",
+        var layerContent = {
+          sql: "SELECT * FROM country_iso_only_1 WHERE vpa_status IN('"+vpaCountries+"')",
           cartocss: $('#vpa-css').text()
-        })
+        }
+
+        layerSource.sublayers.push(layerContent);
+        // loadMap();
       }
-      loadMap(); 
+      else {
+        sublayers[0].setSQL("SELECT * FROM country_iso_only_1 WHERE vpa_status IN('"+vpaCountries+"')");
+      }
+ 
+    }
+
+    //get commodity and year layer
+    function updateCommodity(commodity, year, vpaCountries){
+
+      console.log(commodity, year, vpaCountries)
+
+      if(layerSource.sublayers.length < 2){
+
+
+
+        var layerContent = {
+          sql: "SELECT * FROM all_quantity_figures WHERE product_group ilike '%"+commodity+"%' AND year='"+year+"' AND vpa_status IN('"+vpaCountries+"')",
+          cartocss: $('#commodity-css').text()
+        }
+
+        layerSource.sublayers.push(layerContent);
+        // loadMap();
+      }
+      else {
+        sublayers[1].setSQL("SELECT * FROM all_quantity_figures WHERE product_group ilike '%"+commodity+"%' AND year='"+year+"' AND vpa_status IN('"+vpaCountries+"')");
+      }
     }
  
     // Add data layer to your map
     function loadMap(){
+
       cartodb.createLayer(map,layerSource)
         .addTo(map)
         .done(function(layer) {
-           // for (var i = 0; i < layer.getSubLayerCount(); i++) {
-           //     sublayers[i] = layer.getSubLayer(i);
-           // }
+
+         for (var i = 0; i < layer.getLayerCount(); i++) {
+            sublayer = layer.getSubLayer(i);
+            sublayers.push(sublayer);
+         }
+
         })
         .error(function(err) {
             console.log("error: " + err);
         });
+        
     }
 
+    function removeLayers(){
+      if(sublayers.length){
 
-    // var sql = new cartodb.SQL({ user: 'iandenty', format: 'geojson'  });
+        for (var i = 0; i < sublayers.length; i++) {
+           sublayers[i].toggle()
+        }
 
+      }
 
-    
-    // // var  = L.geoJson().addTo(map);
-    // var vpaLayer = {
-    //   "pre-negotiations" : L.geoJson(),
-    //   "negotiation" : L.geoJson(),
-    //   "preparation" : L.geoJson(),
-    //   "implementation" : L.geoJson(),
-    // }
-
-    // getVpa();
-
-    // var countryLayerGroup = new L.LayerGroup();
-
-    // L.control.layers(countryLayerGroup).addTo(map)
-
-
-
-    // function updateCountries(activeCountries){
-    //   countryLayerGroup.clearLayers();
-    //   for(var i = 0; i < activeCountries.length; i++){
-
-    //     if(vpaLayer.hasOwnProperty(activeCountries[i])) {
-    //       countryLayerGroup.addLayer(vpaLayer[activeCountries[i]])
-    //     }
-
-    //   }
-    //   countryLayerGroup.addTo(map)
-    // }
-
-
-    // function getVpa(){
-    //   var vpaCountryTable = 'country_iso_only_1';
-    //   var sqlStatement = "SELECT * " +
-    //                        "FROM "+vpaCountryTable+"";
-    //   sql.execute(sqlStatement)
-    //   .done(function(geojson) {
-    //     for(var i = 0; i < geojson.features.length; i++){
-    //       vpaStatus = geojson.features[i].properties.vpa_status.toLowerCase();
-    //       switch (vpaStatus) {
-    //         case "pre-negotiations":
-    //           vpaLayer["pre-negotiations"].addData(geojson.features[i]);
-    //           break;
-    //         case "negotiation":
-    //           vpaLayer["negotiation"].addData(geojson.features[i]);
-    //           break;
-    //         case "preparation":
-    //           vpaLayer["preparation"].addData(geojson.features[i]);
-    //           break;
-    //         case "implementation":
-    //           vpaLayer["implementation"].addData(geojson.features[i]);
-    //           break;
-    //       }
-    //     }
-    //   })
-    // }
-
-
-
-
+      // for (var i = 0; i < sublayers.length; i++) {
+      //     sublayers[i].remove();
+      // }
+    }
 
 
   }
