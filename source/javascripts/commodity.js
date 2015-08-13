@@ -88,7 +88,6 @@ $(function() {
 					quantityLayer[0].setSQL("SELECT * FROM all_quantity_figures WHERE product_group ilike '%null%'");
 				}
 				dataBase = 'all_value_figures';
-				quantityLayer = [];
 				updateCommodity(commodity, year, vpaCountries, dataBase);
 			}
 			else if(dataset == "quantity"){
@@ -96,7 +95,6 @@ $(function() {
 					valueLayer[0].setSQL("SELECT * FROM all_quantity_figures WHERE product_group ilike '%null%'");
 				}
 				dataBase = 'all_quantity_figures';
-				valueLayer = [];
 				updateCommodity(commodity, year, vpaCountries, dataBase);
 			}
 
