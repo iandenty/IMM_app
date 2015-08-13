@@ -1,5 +1,7 @@
 $(function() {
 
+
+
 	if($('.commodity #map').length > 0){ 
 
 		// ****form behaviour****
@@ -13,27 +15,18 @@ $(function() {
 
 		var map = L.map('map', {
 				scrollWheelZoom: true,
-				center: [0, 0],
+				center: [0, 60],
 				zoom: 2,
 				infowindow: true,
-				tooltip: true
+				tooltip: true,
+				cartodb_logo: false,
+				legends: true
 		})
 
 		var layerSource = {
 			user_name: 'iandenty',
 			type: 'cartodb',
 			sublayers: []
-		}
-
-		var LayerActions = {
-			country: function(){
-
-			},
-			quantity: function(){
-
-			},
-			value: function(){
-			}
 		}
 
 		var sublayers = [];
@@ -51,21 +44,7 @@ $(function() {
 		var activeData = $('.btn-group').find($('.btn[data-id="quantity"]'));
 		activeData.attr('aria-pressed', 'true');
 		activeData.addClass('active');
-		var dataSet = activeData.attr("data-id");
 
-		// Set dataset
-		var buttons = $('.btn-group').find($('button'));
-		buttons.click(function(){
-			activeData = $(this);
-			if(activeData.hasClass('active')){
-				console.log("already active...");
-			} else {
-				activeData.toggleClass('active').attr('aria-pressed', 'true')
-				var sibling = activeData.siblings('.btn-default');
-				sibling.removeClass('active').attr('aria-pressed', 'false');
-				dataSet = activeData.attr("data-id");
-			}
-		})
 
 		// Set cartoCSS styling
 		var vpaCss = $('#vpa-css').text();
@@ -79,11 +58,15 @@ $(function() {
 			var activeCountries = [];
 			var commodity;
 			var year;
+			var dataset;
 
 			for(var i = 0; i < values.length; i++){
 				var name = values[i].name.toLowerCase();
 				var value = values[i].value;
 				switch (name) {
+					case "dataset":
+						dataset = value;
+						break;					
 					case "vpa-status":
 						activeCountries.push(value);
 						break;
@@ -97,17 +80,23 @@ $(function() {
 			}
 
 			// Get country information
-			var dataBase;
 			var vpaCountries = activeCountries.join("','");
 			updateCountries(vpaCountries);
-
 			//Get commodity information
-			if(dataSet == "value"){
+			if(dataset == "value"){
+				if(quantityLayer.length > 0){
+					quantityLayer[0].setSQL("SELECT * FROM all_quantity_figures WHERE product_group ilike '%null%'");
+				}
 				dataBase = 'all_value_figures';
+				quantityLayer = [];
 				updateCommodity(commodity, year, vpaCountries, dataBase);
 			}
-			else if(dataSet == "quantity"){
+			else if(dataset == "quantity"){
+				if(valueLayer.length > 0){
+					valueLayer[0].setSQL("SELECT * FROM all_quantity_figures WHERE product_group ilike '%null%'");
+				}
 				dataBase = 'all_quantity_figures';
+				valueLayer = [];
 				updateCommodity(commodity, year, vpaCountries, dataBase);
 			}
 
@@ -117,16 +106,15 @@ $(function() {
 		//add countries to layerSource OR set SQL
 		function updateCountries(vpaCountries){
 			if(countryLayer.length === 0){
-
 				var layerContent = {
 					sql: "SELECT * FROM country_iso_only_1 WHERE vpa_status IN('"+vpaCountries+"')",
 					cartocss: vpaCss
 				}
 				layerSource.sublayers.push(layerContent);
-				// loadMap(countryLayer);
 				cartodb.createLayer(map,layerSource).addTo(map).done(function(layer) {
 					sublayer = layer.getSubLayer(0);
 					countryLayer.push(sublayer);
+					countryLayer[0].set(layerSource);
 				})
 			}
 			else {
@@ -143,7 +131,14 @@ $(function() {
 						cartocss: commodityCss
 					}
 					layerSource.sublayers.push(layerContent);
-					loadMap(quantityLayer);
+
+					cartodb.createLayer(map,layerSource).addTo(map).done(function(layer) {
+
+						lastLayer = layer.getSubLayerCount() - 1;
+						sublayer = layer.getSubLayer(lastLayer);
+						quantityLayer.push(sublayer);
+
+					})
 				}
 				else {
 					quantityLayer[0].setSQL("SELECT * FROM "+dataBase+" WHERE product_group ilike '%"+commodity+"%' AND year='"+year+"' AND vpa_status IN('"+vpaCountries+"')");
@@ -152,47 +147,25 @@ $(function() {
 			}
 			else if(dataBase.indexOf("value") >= 0){
 				if(valueLayer.length == 0){
+
 					var layerContent = {
 						sql: "SELECT * FROM "+dataBase+" WHERE product_group ilike '%"+commodity+"%' AND year='"+year+"' AND vpa_status IN('"+vpaCountries+"')",
 						cartocss: commodityCss
 					}
 					layerSource.sublayers.push(layerContent);
-					loadMap(valueLayer);
+
+					cartodb.createLayer(map,layerSource).addTo(map).done(function(layer) {
+						lastLayer = layer.getSubLayerCount() - 1;
+						sublayer = layer.getSubLayer(lastLayer);
+						valueLayer.push(sublayer);
+					})
 				}
 				else {
+					quantityLayer = [];
 					valueLayer[0].setSQL("SELECT * FROM "+dataBase+" WHERE product_group ilike '%"+commodity+"%' AND year='"+year+"' AND vpa_status IN('"+vpaCountries+"')");
+					valueLayer[0].setCartoCSS(commodityCss);
 				}
 			}
-		}
- 
-		// Add data layer to your map
-		function loadMap(arrayLayers){
-			cartodb.createLayer(map,layerSource)
-				.addTo(map)
-				.done(function(layer) {
-
-
-					// working commodity code
-					var num_sublayers = layer.getSubLayerCount();
-					alert(num_sublayers)
-					countrySublayer = layer.getSubLayer(0);
-					sublayer = layer.getSubLayer(1);
-					countryLayer.push(sublayer);
-					arrayLayers.push(sublayer);
-					console.log("quantity", quantityLayer);
-					console.log("country", countryLayer);
-					console.log("value", valueLayer);
-
-
-
-
-					// layerSource.sublayers = [];
-
-
-				})
-				.error(function(err) {
-						console.log("error: " + err);
-				});
 		}
 
 
