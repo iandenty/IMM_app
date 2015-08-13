@@ -1,135 +1,172 @@
 $(function() {
 
-  if($('.commodity #map').length > 0){ 
-
-    var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png',{
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
-    });
-
-    var map = L.map('map', {
-        scrollWheelZoom: false,
-        center: [0, 0],
-        zoom: 2
-    });
-
-    map.addLayer(layer);
-
-    //update output from slider
-    $('#year').change(function(){
-      $('#output-year').val($('#year').val());
-    })
-
-    //style buttons
-    var buttons = $('.btn-group').find($('button'));
-    buttons.click(function(){
-      activeData = $(this);
-      if(activeData.hasClass('active')){
-        console.log("already active...");
-      } else {
-        activeData.toggleClass('active').attr('aria-pressed', 'true')
-        var sibling = activeData.siblings('.btn-default');
-        sibling.removeClass('active').attr('aria-pressed', 'false');
-        var dataType = activeData.attr("data-id");
-      }
-    })
-
-    var sql = new cartodb.SQL({ user: 'iandenty', format: 'geojson'  });
 
 
-    
-    // var  = L.geoJson().addTo(map);
-    var vpaLayer = {
-      "pre-negotiations" : L.geoJson(),
-      "negotiation" : L.geoJson(),
-      "preparation" : L.geoJson(),
-      "implementation" : L.geoJson(),
-    }
+	if($('.commodity #map').length > 0){ 
 
-    // var preNegotiations = L.geoJson();
-    // var negotiations = L.geoJson();
-    // var preparation = L.geoJson();
-    // var implementation = L.geoJson();
+		// ****form behaviour****
 
-    // console.log("neo", vpaLayer)
+		//update output from slider
+		$('#year').change(function(){
+			$('#output-year').val($('#year').val());
+		})
 
-    getVpa();
+		// ****Map logic****
 
-    var countryLayerGroup = new L.LayerGroup();
-    // vpaCss = $("#vpa-css").text();
-    // countryLayerGroup.setCartoCSS();
+		var map = L.map('map', {
+				scrollWheelZoom: true,
+				center: [0, 60],
+				zoom: 2,
+				infowindow: true,
+				tooltip: true,
+				cartodb_logo: false,
+				legends: true
+		})
 
-    $('#commodity-form').submit(function(event){
-      var values = $(this).serializeArray();
-      event.preventDefault();
+		var layerSource = {
+			user_name: 'iandenty',
+			type: 'cartodb',
+			sublayers: []
+		}
 
-      var activeCountries = [];
+		var sublayers = [];
+		var countryLayer = [];
+		var valueLayer = [];
+		var quantityLayer = [];
 
-      for(var i = 0; i < values.length; i++){
-        var name = values[i].name.toLowerCase()
-        var value = values[i].value.toLowerCase()
-        switch (name) {
-          case "vpa-status":
-            activeCountries.push(value);
-            break;
-          case "commodity":
-            console.log(value);
-            break;
-          case "year":
-            console.log(value);
-            break;   
-        }
-      }
-      console.log(activeCountries);
-      updateCountries(activeCountries);
+		var baseLayer = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png',{
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+		});
 
-    })
+		map.addLayer(baseLayer);
+
+		//Set default state
+		var activeData = $('.btn-group').find($('.btn[data-id="quantity"]'));
+		activeData.attr('aria-pressed', 'true');
+		activeData.addClass('active');
 
 
-    function updateCountries(activeCountries){
-      countryLayerGroup.clearLayers();
-      for(var i = 0; i < activeCountries.length; i++){
+		// Set cartoCSS styling
+		var vpaCss = $('#vpa-css').text();
+		var commodityCss = $('#commodity-css').text();
 
-        if(vpaLayer.hasOwnProperty(activeCountries[i])) {
-            countryLayerGroup.addLayer(vpaLayer[activeCountries[i]]);
-        }
+		//Get input values
+		$('#commodity-form').submit(function(event){
+			var values = $(this).serializeArray();
+			event.preventDefault();
 
-      }
-      countryLayerGroup.addTo(map);
+			var activeCountries = [];
+			var commodity;
+			var year;
+			var dataset;
 
-    }
+			for(var i = 0; i < values.length; i++){
+				var name = values[i].name.toLowerCase();
+				var value = values[i].value;
+				switch (name) {
+					case "dataset":
+						dataset = value;
+						break;					
+					case "vpa-status":
+						activeCountries.push(value);
+						break;
+					case "commodity":
+						commodity = value;
+						break;
+					case "year":
+						year = value;
+						break;   
+				}
+			}
+
+			// Get country information
+			var vpaCountries = activeCountries.join("','");
+			updateCountries(vpaCountries);
+			//Get commodity information
+			if(dataset == "value"){
+				if(quantityLayer.length > 0){
+					quantityLayer[0].setSQL("SELECT * FROM all_quantity_figures WHERE product_group ilike '%null%'");
+				}
+				dataBase = 'all_value_figures';
+				updateCommodity(commodity, year, vpaCountries, dataBase);
+			}
+			else if(dataset == "quantity"){
+				if(valueLayer.length > 0){
+					valueLayer[0].setSQL("SELECT * FROM all_quantity_figures WHERE product_group ilike '%null%'");
+				}
+				dataBase = 'all_quantity_figures';
+				updateCommodity(commodity, year, vpaCountries, dataBase);
+			}
+
+		})
 
 
-    function getVpa(){
-      var vpaCountryTable = 'country_iso_only_1';
-      var sqlStatement = "SELECT * " +
-                           "FROM "+vpaCountryTable+"";
-      sql.execute(sqlStatement)
-      .done(function(geojson) {
-        for(var i = 0; i < geojson.features.length; i++){
-          vpaStatus = geojson.features[i].properties.vpa_status.toLowerCase();
-          switch (vpaStatus) {
-            case "pre-negotiations":
-              vpaLayer["pre-negotiations"].addData(geojson.features[i]);
-              break;
-            case "negotiation":
-              vpaLayer["negotiation"].addData(geojson.features[i]);
-              break;
-            case "preparation":
-              vpaLayer["preparation"].addData(geojson.features[i]);
-              break;
-            case "implementation":
-              vpaLayer["implementation"].addData(geojson.features[i]);
-              break;
-          }
-        }
-      })
-    }
+		//add countries to layerSource OR set SQL
+		function updateCountries(vpaCountries){
+			if(countryLayer.length === 0){
+				var layerContent = {
+					sql: "SELECT * FROM country_iso_only_1 WHERE vpa_status IN('"+vpaCountries+"')",
+					cartocss: vpaCss
+				}
+				layerSource.sublayers.push(layerContent);
+				cartodb.createLayer(map,layerSource).addTo(map).done(function(layer) {
+					sublayer = layer.getSubLayer(0);
+					countryLayer.push(sublayer);
+					countryLayer[0].set(layerSource);
+				})
+			}
+			else {
+				countryLayer[0].setSQL("SELECT * FROM country_iso_only_1 WHERE vpa_status IN('"+vpaCountries+"')");
+			}
+		}
+
+		//get commodity and year layer
+		function updateCommodity(commodity, year, vpaCountries, dataBase){
+			if(dataBase.indexOf("quantity") >= 0){
+				if(quantityLayer.length == 0){
+					var layerContent = {
+						sql: "SELECT * FROM "+dataBase+" WHERE product_group ilike '%"+commodity+"%' AND year='"+year+"' AND vpa_status IN('"+vpaCountries+"')",
+						cartocss: commodityCss
+					}
+					layerSource.sublayers.push(layerContent);
+
+					cartodb.createLayer(map,layerSource).addTo(map).done(function(layer) {
+
+						lastLayer = layer.getSubLayerCount() - 1;
+						sublayer = layer.getSubLayer(lastLayer);
+						quantityLayer.push(sublayer);
+
+					})
+				}
+				else {
+					quantityLayer[0].setSQL("SELECT * FROM "+dataBase+" WHERE product_group ilike '%"+commodity+"%' AND year='"+year+"' AND vpa_status IN('"+vpaCountries+"')");
+					quantityLayer[0].setCartoCSS(commodityCss);
+				}
+			}
+			else if(dataBase.indexOf("value") >= 0){
+				if(valueLayer.length == 0){
+
+					var layerContent = {
+						sql: "SELECT * FROM "+dataBase+" WHERE product_group ilike '%"+commodity+"%' AND year='"+year+"' AND vpa_status IN('"+vpaCountries+"')",
+						cartocss: commodityCss
+					}
+					layerSource.sublayers.push(layerContent);
+
+					cartodb.createLayer(map,layerSource).addTo(map).done(function(layer) {
+						lastLayer = layer.getSubLayerCount() - 1;
+						sublayer = layer.getSubLayer(lastLayer);
+						valueLayer.push(sublayer);
+					})
+				}
+				else {
+					quantityLayer = [];
+					valueLayer[0].setSQL("SELECT * FROM "+dataBase+" WHERE product_group ilike '%"+commodity+"%' AND year='"+year+"' AND vpa_status IN('"+vpaCountries+"')");
+					valueLayer[0].setCartoCSS(commodityCss);
+				}
+			}
+		}
 
 
-
-
-
-
-  }
+	}
 
 })

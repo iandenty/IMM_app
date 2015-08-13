@@ -2,14 +2,16 @@
 title: ProjectIMM
 ---
 
+<!-- Country styling -->
 <style id="vpa-css" type="cartocss/text">
   /** category visualization */
 
   #country_iso_only_1 {
-     polygon-opacity: 0.7;
+     polygon-opacity: 0.5;
      line-color: #FFF;
      line-width: 1;
      line-opacity: 1;
+     line-opacity: 0.1;
   }
 
   #country_iso_only_1[vpa_status="Pre-negotiations"] {
@@ -25,17 +27,87 @@ title: ProjectIMM
      polygon-fill: #b2df8a;
   }
 </style>
+
+<style id="commodity-css" type="cartocss/text">
+  /** bubble visualization */
+
+ /** bubble visualization */
+
+ #all_quantity_figures{
+   marker-fill-opacity: 0.9;
+   marker-line-color: #FFF;
+   marker-line-width: 1.5;
+   marker-line-opacity: 1;
+   marker-placement: point;
+   marker-multi-policy: largest;
+   marker-type: ellipse;
+   
+   marker-allow-overlap: true;
+   marker-clip: false;
+ }
+ #all_quantity_figures [ amount <= 2613.1] {
+    marker-width: 70.0;
+ }
+ #all_quantity_figures [ amount <= 1213.8] {
+    marker-width: 63.3;
+ }
+ #all_quantity_figures [ amount <= 643.1] {
+    marker-width: 56.7;
+ }
+ #all_quantity_figures [ amount <= 316] {
+    marker-width: 50.0;
+ }
+ #all_quantity_figures [ amount <= 152.8] {
+    marker-width: 43.3;
+ }
+ #all_quantity_figures [ amount <= 70] {
+    marker-width: 36.7;
+ }
+ #all_quantity_figures [ amount <= 40] {
+    marker-width: 30.0;
+ }
+ #all_quantity_figures [ amount <= 24.5] {
+    marker-width: 23.3;
+ }
+ #all_quantity_figures [ amount <= 9.5] {
+    marker-width: 16.7;
+ }
+ #all_quantity_figures [ amount <= 3.8] {
+    marker-width: 10.0;
+ }
+
+ #all_quantity_figures [product_group='Wood'] {
+   marker-fill: #1F77B4;
+   marker-line-color: #FFF;
+ }
+
+ #all_quantity_figures [product_group='Paper'] {
+   marker-fill: #2CA02C;
+   marker-line-color: #FFF;
+ }
+
+ #all_quantity_figures [product_group='Pulp'] {
+   marker-fill: #FF5C00;
+   marker-line-color: #FFF;
+ }
+
+ #all_quantity_figures [product_group='Furniture'] {
+   marker-fill: #D62728;
+   marker-line-color: #FFF;
+ }
+  </style>
+
 <div class="content">
   <div class="commodity map">
     <div id="map"></div>
     <div class="options-container">
 
-      <div class="button-container">
+<!--       <div class="button-container">
         <div class="btn-group">
           <button type="button" class="btn btn-default" data-id="quantity">Quantity</button>
           <button type="button" class="btn btn-default" data-id="value">Value</button>
         </div>
-      </div>
+      </div> -->
 
       <div class="options">
         <form id="commodity-form">
@@ -44,24 +116,40 @@ title: ProjectIMM
             <legend>Flegt status:</legend>
             <ul>
               <li>
-                <input type="checkbox" name="vpa-status" id="pre-negotiations" value="pre-negotiations" />
+                <input type="checkbox" name="vpa-status" id="pre-negotiations" value="Pre-negotiations" />
                 <label for="furnture">Pre-negotiations</label>
               </li>
               <li>
-                <input type="checkbox" name="vpa-status" id="negotiation" value="negotiation"/>
+                <input type="checkbox" name="vpa-status" id="negotiation" value="Negotiation"/>
                 <label for="negotiation">Negotiation</label>
 
               </li>
               <li>
-                <input type="checkbox" name="vpa-status" id="preparation" value="preparation"/>
+                <input type="checkbox" name="vpa-status" id="preparation" value="Preparation"/>
                 <label for="preparation">Preparation</label>
               </li>
               <li>
-                <input type="checkbox" name="vpa-status" id="implementation" value="implementation"/>
+                <input type="checkbox" name="vpa-status" id="implementation" value="Implementation"/>
                 <label for="implementation">Implementation</label>
               </li>
             </ul>
           </fieldset>
+
+
+          <fieldset>
+            <legend>Dataset</legend>
+            <ul>
+              <li>
+                <input type="radio" name="dataset" id="quantity" value="quantity"/>
+                <label for="quantity">Quantity</label>
+              </li>
+              <li>
+                <input type="radio" name="dataset" id="value" value="value" />
+                <label for="value">Value</label>
+              </li>
+            </ul>
+          </fieldset>
+
 
 
           <fieldset>
