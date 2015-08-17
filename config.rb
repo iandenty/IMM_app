@@ -92,3 +92,12 @@ configure :build do
   # Or use a different image path
   # set :http_prefix, "/Content/images/"
 end
+
+
+activate :bitballoon do |bitballoon|
+  bitballoon.token = ENV["iMarket_Monitor"]
+  bitballoon.site  = "fitter-rat-68548.bitballoon.com/"
+
+  # Optional: always run a build before deploying
+  bitballoon.build_before = true
+end

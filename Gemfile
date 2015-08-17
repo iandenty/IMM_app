@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 
 gem "middleman", "~>3.3.10"
 gem 'rack-contrib', '~> 1.1.0'
-gem "puma"
+gem 'middleman-bitballoon'
 
 # Live-reloading plugin
 gem "middleman-livereload", "~> 3.1.0"
