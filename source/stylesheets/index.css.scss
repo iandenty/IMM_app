@@ -1,0 +1,56 @@
+.app-content {
+	float: left;
+	width: 50%;
+}
+
+
+.app-text {
+	font-family: 'Raleway', sans-serif;
+	color: rgba(83, 83, 83, 1.0);
+	float: left;
+	width: 20%;
+	i.fa {
+		color: rgba(171, 171, 171, 1.0);
+		font-size: 150px;
+		margin-right: 20px;
+		margin-bottom: 20px;
+		&:hover{
+			color: rgba(36, 36, 38, 1.0);
+			cursor: pointer;
+		}
+	}
+	ul {
+		text-align: center;
+		li{
+			strong {
+				color: black;
+			}
+			font-size: 20px;
+			display: block;
+			&:nth-child(even){
+				padding-top: 10px;
+				padding-bottom: 10px;
+			}
+		}
+	}
+	.app-description {
+		height: 60px;
+	}
+}
+
+.home {
+	width: 80%;
+	height: auto;
+	#map {
+		height: 500px;
+
+	}
+}
+
+.app-description{
+	clear: both;
+	width: 100%;
+	padding-top: 70px;
+	font-size: 32px;
+	text-align: center;
+}

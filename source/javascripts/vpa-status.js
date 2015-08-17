@@ -15,7 +15,6 @@ $(function () {
         });
         layers[1].on('featureOver', function() {
           $('.main #map').css('cursor', 'pointer');
-          console.log("hello");
         });
 
         // you can get the native map to work with it
@@ -23,7 +22,7 @@ $(function () {
 
         // now, perform any operations you need, e.g. assuming map is a L.Map object:
         map.setZoom(2);
-        map.panTo([0, 0]);
+        map.panTo([0, 30]);
       });
 
   }
