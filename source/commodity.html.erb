@@ -95,19 +95,12 @@ title: ProjectIMM
    marker-fill: #D62728;
    marker-line-color: #FFF;
  }
-  </style>
+</style>
 
 <div class="content">
   <div class="commodity map">
     <div id="map"></div>
     <div class="options-container">
-
-<!--       <div class="button-container">
-        <div class="btn-group">
-          <button type="button" class="btn btn-default" data-id="quantity">Quantity</button>
-          <button type="button" class="btn btn-default" data-id="value">Value</button>
-        </div>
-      </div> -->
 
       <div class="options">
         <form id="commodity-form">
@@ -193,3 +186,16 @@ title: ProjectIMM
     </div>
   </div>
 </div>
+<script type="infowindow/html" id="infowindow_template">
+  <div class="cartodb-popup">
+    <a href="#close" class="cartodb-popup-close-button close">x</a>
+     <div class="cartodb-popup-content-wrapper">
+       <div class="cartodb-popup-content">
+         <!-- content.data contains the field info -->
+         <h4>City: </h4>
+         <p>{{content.data.name}}</p>
+       </div>
+     </div>
+     <div class="cartodb-popup-tip-container"></div>
+  </div>
+</script>
